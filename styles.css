@@ -1,0 +1,31 @@
+th {
+    font-weight: normal;
+    font-size: large;
+    text-align: left;
+}
+
+.highlight, .chosen {
+    background-color: #ffffbb;
+}
+
+th.highlight, .chosen {
+    font-weight: bold;
+}
+
+.added {
+    color: red;
+    font-weight: bold;
+}
+
+.has-item {
+    background-color: yellow;
+}
+
+td {
+    text-align: center;
+}
+
+.heading {
+    font-weight: bold;
+    color: #555555;
+}
