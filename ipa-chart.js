@@ -1,7 +1,8 @@
 var places = ['bilabial','labio-dental','alveolar','retroflex','palatal',
-                'velar','uvular','glottal'];
+                'velar','uvular','pharyngeal','glottal'];
 var manners = ['nasal','plosive','fricative','approximant'];
-var voices = ['default','unvoiced','voiced','lateral','aspirated','ejective']
+var features = ['default','unvoiced','voiced','lateral','aspirated','ejective',
+                'prenasalized','implosive', 'tap','trill']
 
 function makeCategoryRow(category,heading,label='label'){
     string = '<tr><th class="heading">' + heading + '</th>';
@@ -20,7 +21,7 @@ function makeIPATable(){
         for(var j=0;j<places.length;j++){
             string += '<td class="' + manners[i] + ' ' + places[j] + '">';
             while(k < consonants.length && consonants[k].place === places[j]){
-                string += ' <span class="' + consonants[k].voicing + '">' 
+                string += ' <span class="' + consonants[k].feature + '">' 
                 string += consonants[k].symbol + '</span>';
                 k += 1;
             }
@@ -32,8 +33,9 @@ function makeIPATable(){
 };
 
 function updateHighlightedClasses(clicked=false){
+    $('.has-item').removeClass('has-item');
     if(clicked || $('.added').length !== 0){
-        $('.highlight,.has-item').removeClass('highlight has-item');
+        $('.highlight').removeClass('highlight');
         $('.added').each(function(){
             $(this).parent().attr('class').split(' ').forEach(function(category){
                 $('.'+category).addClass('highlight');
@@ -60,9 +62,9 @@ $(document).ready(function(){
     $('table#IPA-table').append(makeIPATable());
     $('table#places').append(makeCategoryRow(places,'places'));
     $('table#manners').append(makeCategoryRow(manners,'manners'));
-    $('table#voicings').append(makeCategoryRow(voices,'voicing','voicing'));
+    $('table#features').append(makeCategoryRow(features,'features','features'));
     
-    $('.voicing.default').addClass('chosen');
+    $('.features.default').addClass('chosen');
     $('span').not('.default').hide();
     
     $('span').on('click',function(){
@@ -95,14 +97,20 @@ $(document).ready(function(){
         }
     });
     
-    $('.voicing').on('click',function(){
+    $('.features').on('click',function(){
         $(this).toggleClass('chosen');
-        $('span').hide();
-        $('.chosen').each(function(){
+        $('span').show();
+        $('.features').not('.chosen,.default').each(function(){
             var category = $(this).attr('class').split(' ')[1];
-            if($(this).hasClass('chosen')){
-                $('span.'+category).show();
-            }
+            $('span.'+category).not('.default').removeClass('added');
+            $('span.'+category).hide();
         });
+        if($('.features.default').hasClass('chosen')){
+            $('span.default').show();
+        } else {
+            $('span.default').removeClass('added');
+            $('span.default').hide();
+        };
+        updateHighlightedClasses();
     });
 });
