@@ -1,8 +1,9 @@
-var places = ['bilabial','labio-dental','alveolar','retroflex','palatal',
+var places = ['bilabial','labio-dental','alveolar','sibilant-alveolar','post-alveolar','palato-alveolar','retroflex','sibilant-retroflex','palatal',
                 'velar','uvular','pharyngeal','glottal'];
 var manners = ['nasal','plosive','fricative','approximant'];
-var features = ['default','voiceless','voiced','lateral','aspirated','ejective',
-                'prenasalized','implosive', 'tap','trill']
+var voicings = ['default','voiceless','voiced','aspirated','ejective',
+                'prenasalized','implosive']
+var features = ['tap', 'lateral', 'trill']
 
 function makeCategoryRow(category,heading,label='label'){
     string = '<tr><th class="heading">' + heading + '</th>';
@@ -12,8 +13,12 @@ function makeCategoryRow(category,heading,label='label'){
     return string + '</tr>';
 };
 
+function makeSuperclass(supername, classes) {
+    return '<th class="' + classes.join(' ') + '" colspan=' + classes.length + '>' + supername + '</th>';
+};
+
 function makeIPATable(){
-    var string = '<thead>' + makeCategoryRow(places,'') + '</thead>';
+    var string = '<thead><tr><th></th>' +  makeSuperclass('labial',places.slice(0,2)) + makeSuperclass('coronal',places.slice(2,8)) + makeSuperclass('dorsal',places.slice(8,11)) + makeSuperclass('radical',places.slice(11,13)) +'</tr>' + makeCategoryRow(places,'') + '</thead>';
     string += '<tbody>';
     var k = 0;
     for(var i=0;i<manners.length;i++){
@@ -62,10 +67,12 @@ $(document).ready(function(){
     $('table#IPA-table').append(makeIPATable());
     $('table#places').append(makeCategoryRow(places,'places'));
     $('table#manners').append(makeCategoryRow(manners,'manners'));
+    $('table#voicings').append(makeCategoryRow(voicings,'voicings','voicings'));
     $('table#features').append(makeCategoryRow(features,'features','features'));
     
-    $('.features.default').addClass('chosen');
+    $('.voicings.default').addClass('chosen');
     $('span').not('.default').hide();
+    $('span.tap,span.trill,span.lateral').hide();
     
     $('span').on('click',function(){
         $(this).toggleClass('added');
@@ -97,16 +104,20 @@ $(document).ready(function(){
         }
     });
     
-    $('.features').on('click',function(){
+    $('.voicings,.features').on('click',function(){
         $(this).toggleClass('chosen');
         $('span').show();
-        $('.features').not('.chosen,.default').each(function(){
+        $('.voicings').not('.chosen,.default').each(function(){
             var category = $(this).attr('class').split(' ')[1];
             $('span.'+category).hide();
         });
-        if($('.features.default').hasClass('chosen')){
+        if($('.voicings.default').hasClass('chosen')){
             $('span.default').show();
         }
+        $('.features').not('.chosen').each(function(){
+            var category = $(this).attr('class').split(' ')[1];
+            $('span.'+category).hide();
+        });
         $(':hidden').removeClass('added');
         updateHighlightedClasses();
     });
